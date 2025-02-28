@@ -12,9 +12,12 @@ public class VinylLibrary {
   }
 
   private void initializeDefaultVinyls() {
-    addVinyl(new Vinyl("Dark Side of the Moon", "Pink Floyd", 1973));
-    addVinyl(new Vinyl("Thriller", "Michael Jackson", 1982));
-    addVinyl(new Vinyl("Abbey Road", "The Beatles", 1969));
+    addVinyl(new Vinyl("test", "Name Surname", 1999));
+    addVinyl(new Vinyl("test2", "Name Surname", 2000));
+    addVinyl(new Vinyl("test3", "Name Surname", 2001));
+    addVinyl(new Vinyl("test4", "Name Surname", 2002));
+    addVinyl(new Vinyl("test5", "Name Surname", 2003));
+
   }
 
   public void addVinyl(Vinyl vinyl) {

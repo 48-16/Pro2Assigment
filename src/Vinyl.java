@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-// Vinyl class
 public class Vinyl {
   private String title;
   private String artist;
@@ -43,12 +42,10 @@ public class Vinyl {
   public void returnVinyl() {
     state.returnVinyl();
     if (markedForRemoval && getReserver() == null) {
-      // Notify that vinyl can be fully removed
       notifyRemoval();
     }
   }
 
-  // Getters and setters
   public String getTitle() { return title; }
   public String getArtist() { return artist; }
   public int getYear() { return year; }
@@ -64,7 +61,6 @@ public class Vinyl {
     notifyObservers();
   }
 
-  // Observer pattern implementation
   public void addObserver(Observer observer) {
     observers.add(observer);
   }
@@ -80,7 +76,6 @@ public class Vinyl {
   }
 
   private void notifyRemoval() {
-    // Notify that vinyl can be fully removed
     for (Observer observer : observers) {
       if (observer instanceof VinylLibrary) {
         ((VinylLibrary) observer).removeVinyl(this);

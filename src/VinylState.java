@@ -1,4 +1,3 @@
-// State interface
 public interface VinylState {
   void borrow(String borrower);
   void reserve(String reserver);

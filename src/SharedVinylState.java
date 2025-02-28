@@ -1,9 +1,4 @@
-import javafx.application.Platform;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 
-// Shared ViewState
 public class SharedVinylState {
   private static SharedVinylState instance;
   private Vinyl selectedVinyl;
@@ -26,5 +21,4 @@ public class SharedVinylState {
   }
 }
 
-// Main ViewModel
 

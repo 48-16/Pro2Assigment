@@ -24,7 +24,6 @@ public class ReservedState implements VinylState {
 
   @Override
   public void returnVinyl() {
-    // Already not borrowed, do nothing
   }
 
   @Override

@@ -1,6 +1,5 @@
 import javafx.beans.property.SimpleStringProperty;
 
-// Individual Vinyl ViewModel
 public class VinylViewModel {
   private Vinyl vinyl;
   private SimpleStringProperty title;
@@ -18,7 +17,6 @@ public class VinylViewModel {
     }
   }
 
-  // Getters for properties
   public SimpleStringProperty titleProperty() { return title; }
   public SimpleStringProperty artistProperty() { return artist; }
   public SimpleStringProperty statusProperty() { return status; }

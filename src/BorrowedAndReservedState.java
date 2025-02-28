@@ -1,4 +1,3 @@
-// BorrowedAndReserved State
 public class BorrowedAndReservedState implements VinylState {
   private final Vinyl vinyl;
 

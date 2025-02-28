@@ -16,7 +16,7 @@ public class VinylUser implements Runnable {
   public void run() {
     while (!Thread.interrupted()) {
       try {
-        Thread.sleep(random.nextInt(3000) + 2000); // Sleep 2-5 seconds
+        Thread.sleep(random.nextInt(3000) + 2000);
 
         List<Vinyl> vinyls = library.getVinyls();
         if (!vinyls.isEmpty()) {
@@ -38,7 +38,6 @@ public class VinylUser implements Runnable {
                 break;
             }
           } catch (IllegalStateException e) {
-            // Action not possible, continue
           }
         }
       } catch (InterruptedException e) {

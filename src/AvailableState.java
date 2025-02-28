@@ -1,4 +1,3 @@
-// Available State
 public class AvailableState implements VinylState {
   private final Vinyl vinyl;
 
@@ -20,7 +19,6 @@ public class AvailableState implements VinylState {
 
   @Override
   public void returnVinyl() {
-    // Already available, do nothing
   }
 
   @Override
@@ -28,4 +26,3 @@ public class AvailableState implements VinylState {
     return "Available";
   }
 }
-//fasz
