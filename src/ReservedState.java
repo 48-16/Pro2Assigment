@@ -1,4 +1,4 @@
-// Reserved State
+
 public class ReservedState implements VinylState {
   private final Vinyl vinyl;
 

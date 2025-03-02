@@ -10,10 +10,10 @@ public class VinylLibraryApp extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-    // Initialize the model
+
     library = new VinylLibrary();
 
-    // Create and start simulation threads
+
     VinylUser bob = new VinylUser("Bob", library);
     VinylUser wendy = new VinylUser("Wendy", library);
 
@@ -26,7 +26,7 @@ public class VinylLibraryApp extends Application {
     bobThread.start();
     wendyThread.start();
 
-    // Initialize view and viewmodel
+
     FXMLLoader loader = new FXMLLoader(getClass().getResource("MainViewFXML.fxml"));
     primaryStage.setScene(new Scene(loader.load()));
 

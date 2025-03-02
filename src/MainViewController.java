@@ -44,7 +44,7 @@ public class MainViewController {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
       try {
-        // Simulating user input - in a real app, you'd want a dialog for this
+
         selected.getVinyl().reserve("Manual User");
       } catch (IllegalStateException e) {
         showError(e.getMessage());

@@ -12,11 +12,11 @@ public class VinylLibrary {
   }
 
   private void initializeDefaultVinyls() {
-    addVinyl(new Vinyl("test", "Name Surname", 1999));
-    addVinyl(new Vinyl("test2", "Name Surname", 2000));
-    addVinyl(new Vinyl("test3", "Name Surname", 2001));
-    addVinyl(new Vinyl("test4", "Name Surname", 2002));
-    addVinyl(new Vinyl("test5", "Name Surname", 2003));
+    addVinyl(new Vinyl("test", "Lindemann", 1999));
+    addVinyl(new Vinyl("test2", "sasha", 2000));
+    addVinyl(new Vinyl("test3", "slava", 2001));
+    addVinyl(new Vinyl("test4", "kristof", 2002));
+    addVinyl(new Vinyl("test5", "Oksi", 2003));
 
   }
 
