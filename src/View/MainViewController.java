@@ -1,6 +1,8 @@
 package View;
 
 import Model.SharedVinylState;
+import ViewModel.VinylListViewModel;
+import ViewModel.VinylViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

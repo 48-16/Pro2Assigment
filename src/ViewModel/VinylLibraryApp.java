@@ -32,7 +32,7 @@ public class VinylLibraryApp extends Application {
     wendyThread.start();
 
 
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("View/MainViewFXML.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MainViewFXML.fxml"));
     primaryStage.setScene(new Scene(loader.load()));
 
     MainViewController controller = loader.getController();

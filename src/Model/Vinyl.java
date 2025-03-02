@@ -1,5 +1,7 @@
 package Model;
 
+import ViewModel.Observer;
+
 import java.util.ArrayList;
 import java.util.List;
 

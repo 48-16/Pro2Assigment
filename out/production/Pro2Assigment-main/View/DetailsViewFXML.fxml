@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="View.DetailsViewController">
+    <Label fx:id="titleLabel" text="Title placeholder" />
+    <Label fx:id="artistLabel" text="Artist placeholder" />
+    <Label fx:id="yearLabel" text="Year placeholder" />
+    <Label fx:id="statusLabel" text="Status placeholder" />
+</VBox>
