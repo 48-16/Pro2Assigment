@@ -1,3 +1,5 @@
+package Model;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,14 +29,14 @@ public class Vinyl {
 
   public void borrow(String borrower) {
     if (markedForRemoval && (getReserver() == null || !borrower.equals(getReserver()))) {
-      throw new IllegalStateException("Vinyl is marked for removal");
+      throw new IllegalStateException("Model.Vinyl is marked for removal");
     }
     state.borrow(borrower);
   }
 
   public void reserve(String reserver) {
     if (markedForRemoval) {
-      throw new IllegalStateException("Vinyl is marked for removal");
+      throw new IllegalStateException("Model.Vinyl is marked for removal");
     }
     state.reserve(reserver);
   }

@@ -1,3 +1,8 @@
+package ViewModel;
+
+import Model.SharedVinylState;
+import Model.Vinyl;
+import Model.VinylLibrary;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;

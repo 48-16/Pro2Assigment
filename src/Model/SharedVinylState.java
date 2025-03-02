@@ -1,3 +1,4 @@
+package Model;
 
 public class SharedVinylState {
   private static SharedVinylState instance;

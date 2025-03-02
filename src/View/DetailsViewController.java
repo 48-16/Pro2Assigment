@@ -1,3 +1,6 @@
+package View;
+
+import Model.Vinyl;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 

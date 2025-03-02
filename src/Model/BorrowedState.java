@@ -1,3 +1,5 @@
+package Model;
+
 public class BorrowedState implements VinylState {
   private final Vinyl vinyl;
 
@@ -7,7 +9,7 @@ public class BorrowedState implements VinylState {
 
   @Override
   public void borrow(String borrower) {
-    throw new IllegalStateException("Vinyl is already borrowed");
+    throw new IllegalStateException("Model.Vinyl is already borrowed");
   }
 
   @Override

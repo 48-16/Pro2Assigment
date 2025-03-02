@@ -1,3 +1,5 @@
+package Model;
+
 public interface VinylState {
   void borrow(String borrower);
   void reserve(String reserver);

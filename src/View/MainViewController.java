@@ -1,3 +1,6 @@
+package View;
+
+import Model.SharedVinylState;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -87,10 +90,10 @@ public class MainViewController {
   @FXML
   private void showDetails() {
     try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("DetailsViewFXML.fxml"));
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("View/DetailsViewFXML.fxml"));
       Stage detailsStage = new Stage();
       detailsStage.initModality(Modality.APPLICATION_MODAL);
-      detailsStage.setTitle("Vinyl Details");
+      detailsStage.setTitle("Model.Vinyl Details");
       detailsStage.setScene(new Scene(loader.load()));
 
       DetailsViewController controller = loader.getController();

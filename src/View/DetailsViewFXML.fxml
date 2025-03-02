@@ -4,7 +4,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="DetailsViewController">
+      fx:controller="View.DetailsViewController">
     <Label fx:id="titleLabel" text="Title placeholder" />
     <Label fx:id="artistLabel" text="Artist placeholder" />
     <Label fx:id="yearLabel" text="Year placeholder" />

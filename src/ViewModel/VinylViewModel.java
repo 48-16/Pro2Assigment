@@ -1,3 +1,6 @@
+package ViewModel;
+
+import Model.Vinyl;
 import javafx.beans.property.SimpleStringProperty;
 
 public class VinylViewModel {

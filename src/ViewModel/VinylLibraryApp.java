@@ -1,3 +1,8 @@
+package ViewModel;
+
+import Model.VinylLibrary;
+import Model.VinylUser;
+import View.MainViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,14 +32,14 @@ public class VinylLibraryApp extends Application {
     wendyThread.start();
 
 
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("MainViewFXML.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("View/MainViewFXML.fxml"));
     primaryStage.setScene(new Scene(loader.load()));
 
     MainViewController controller = loader.getController();
     VinylListViewModel viewModel = new VinylListViewModel(library);
     controller.setViewModel(viewModel);
 
-    primaryStage.setTitle("Vinyl Library");
+    primaryStage.setTitle("Model.Vinyl Library");
     primaryStage.show();
   }
 

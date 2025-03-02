@@ -1,3 +1,5 @@
+package Model;
+
 public class BorrowedAndReservedState implements VinylState {
   private final Vinyl vinyl;
 
@@ -7,12 +9,12 @@ public class BorrowedAndReservedState implements VinylState {
 
   @Override
   public void borrow(String borrower) {
-    throw new IllegalStateException("Vinyl is already borrowed");
+    throw new IllegalStateException("Model.Vinyl is already borrowed");
   }
 
   @Override
   public void reserve(String reserver) {
-    throw new IllegalStateException("Vinyl is already reserved");
+    throw new IllegalStateException("Model.Vinyl is already reserved");
   }
 
   @Override

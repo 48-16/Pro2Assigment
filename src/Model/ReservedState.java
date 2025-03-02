@@ -1,3 +1,4 @@
+package Model;
 
 public class ReservedState implements VinylState {
   private final Vinyl vinyl;
@@ -13,13 +14,13 @@ public class ReservedState implements VinylState {
       vinyl.setReserver(null);
       vinyl.setState(new BorrowedState(vinyl));
     } else {
-      throw new IllegalStateException("Vinyl is reserved by someone else");
+      throw new IllegalStateException("Model.Vinyl is reserved by someone else");
     }
   }
 
   @Override
   public void reserve(String reserver) {
-    throw new IllegalStateException("Vinyl is already reserved");
+    throw new IllegalStateException("Model.Vinyl is already reserved");
   }
 
   @Override

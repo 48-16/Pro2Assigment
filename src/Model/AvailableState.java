@@ -1,3 +1,5 @@
+package Model;
+
 public class AvailableState implements VinylState {
   private final Vinyl vinyl;
 
