@@ -17,11 +17,19 @@ public class VinylSocketClient {
   private BufferedReader in;
   private PrintWriter out;
   private Gson gson;
+  private String host;
+  private int port;
 
   private VinylSocketClient() {
+    this("localhost", 8888); // Default values
+  }
+
+  private VinylSocketClient(String host, int port) {
+    this.host = host;
+    this.port = port;
     gson = new Gson();
     try {
-      socket = new Socket("localhost", 8888);
+      socket = new Socket(host, port);
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       out = new PrintWriter(socket.getOutputStream(), true);
     } catch (IOException e) {
@@ -30,11 +38,22 @@ public class VinylSocketClient {
   }
 
   public static synchronized VinylSocketClient getInstance() {
+    return getInstance("localhost", 8888);
+  }
+
+  public static synchronized VinylSocketClient getInstance(String host, int port) {
     if (instance == null) {
-      instance = new VinylSocketClient();
+      instance = new VinylSocketClient(host, port);
+    } else {
+      // If a different host/port is requested, create a new instance
+      if (!instance.host.equals(host) || instance.port != port) {
+        instance.close();
+        instance = new VinylSocketClient(host, port);
+      }
     }
     return instance;
   }
+
 
   public CompletableFuture<List<Vinyl>> listVinyls() {
     return CompletableFuture.supplyAsync(() -> {
@@ -118,3 +137,4 @@ public class VinylSocketClient {
     }
   }
 }
+
