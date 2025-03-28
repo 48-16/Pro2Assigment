@@ -1,6 +1,8 @@
 package View;
 
 import Model.SharedVinylState;
+import Model.Vinyl;
+import Server.Logger;
 import ViewModel.VinylListViewModel;
 import ViewModel.VinylViewModel;
 import javafx.fxml.FXML;
@@ -24,9 +26,11 @@ public class MainViewController {
 
   private VinylListViewModel viewModel;
   private SharedVinylState sharedState;
+  private Logger logger;
 
   public void initialize() {
     sharedState = SharedVinylState.getInstance();
+    logger = Logger.getInstance();
 
     titleColumn.setCellValueFactory(cellData -> cellData.getValue().titleProperty());
     artistColumn.setCellValueFactory(cellData -> cellData.getValue().artistProperty());
@@ -49,11 +53,16 @@ public class MainViewController {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
       try {
-
+        logger.log("Manual User reserving vinyl: " + selected.getTitle());
         selected.getVinyl().reserve("Manual User");
+        logger.log("Vinyl reserved successfully: " + selected.getTitle());
       } catch (IllegalStateException e) {
+        logger.log("Reserve failed: " + e.getMessage());
         showError(e.getMessage());
       }
+    } else {
+      logger.log("Reserve attempted without selecting a vinyl");
+      showError("Please select a vinyl to reserve");
     }
   }
 
@@ -62,10 +71,16 @@ public class MainViewController {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
       try {
+        logger.log("Manual User borrowing vinyl: " + selected.getTitle());
         selected.getVinyl().borrow("Manual User");
+        logger.log("Vinyl borrowed successfully: " + selected.getTitle());
       } catch (IllegalStateException e) {
+        logger.log("Borrow failed: " + e.getMessage());
         showError(e.getMessage());
       }
+    } else {
+      logger.log("Borrow attempted without selecting a vinyl");
+      showError("Please select a vinyl to borrow");
     }
   }
 
@@ -74,10 +89,16 @@ public class MainViewController {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
       try {
+        logger.log("Manual User returning vinyl: " + selected.getTitle());
         selected.getVinyl().returnVinyl();
+        logger.log("Vinyl returned successfully: " + selected.getTitle());
       } catch (IllegalStateException e) {
+        logger.log("Return failed: " + e.getMessage());
         showError(e.getMessage());
       }
+    } else {
+      logger.log("Return attempted without selecting a vinyl");
+      showError("Please select a vinyl to return");
     }
   }
 
@@ -85,7 +106,12 @@ public class MainViewController {
   private void onRemove() {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
+      logger.log("Manual User marking vinyl for removal: " + selected.getTitle());
       selected.getVinyl().markForRemoval();
+      logger.log("Vinyl marked for removal: " + selected.getTitle());
+    } else {
+      logger.log("Remove attempted without selecting a vinyl");
+      showError("Please select a vinyl to remove");
     }
   }
 
@@ -95,14 +121,22 @@ public class MainViewController {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("View/DetailsViewFXML.fxml"));
       Stage detailsStage = new Stage();
       detailsStage.initModality(Modality.APPLICATION_MODAL);
-      detailsStage.setTitle("Model.Vinyl Details");
+      detailsStage.setTitle("Vinyl Details");
       detailsStage.setScene(new Scene(loader.load()));
 
       DetailsViewController controller = loader.getController();
-      controller.setVinyl(sharedState.getSelectedVinyl());
+      Vinyl selectedVinyl = sharedState.getSelectedVinyl();
+
+      if (selectedVinyl != null) {
+        logger.log("Showing details for vinyl: " + selectedVinyl.getTitle());
+        controller.setVinyl(selectedVinyl);
+      } else {
+        logger.log("Attempted to show details without a selected vinyl");
+      }
 
       detailsStage.showAndWait();
     } catch (Exception e) {
+      logger.log("Error showing vinyl details: " + e.getMessage());
       e.printStackTrace();
     }
   }
