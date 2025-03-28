@@ -16,15 +16,18 @@ public class VinylServer {
   private static VinylLibrary library;
   private ServerSocket serverSocket;
   private ExecutorService threadPool;
+  private static Logger logger; // Logger instance
 
   public VinylServer(int port) {
     library = new VinylLibrary();
+    logger = Logger.getInstance(); // Initialize logger
 
     try {
       serverSocket = new ServerSocket(port);
       threadPool = Executors.newCachedThreadPool();
-      System.out.println("Vinyl Server started on port " + port);
+      logger.log("Vinyl Server started on port " + port);
     } catch (IOException e) {
+      logger.log("Error starting server: " + e.getMessage());
       e.printStackTrace();
     }
   }
@@ -33,10 +36,11 @@ public class VinylServer {
     try {
       while (!serverSocket.isClosed()) {
         Socket clientSocket = serverSocket.accept();
-        System.out.println("New client connected: " + clientSocket.getInetAddress());
+        logger.log("New client connected: " + clientSocket.getInetAddress());
         threadPool.execute(new ClientHandler(clientSocket));
       }
     } catch (IOException e) {
+      logger.log("Server connection error: " + e.getMessage());
       e.printStackTrace();
     }
   }
@@ -55,6 +59,7 @@ public class VinylServer {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(clientSocket.getOutputStream(), true);
       } catch (IOException e) {
+        logger.log("Error setting up client handler: " + e.getMessage());
         e.printStackTrace();
       }
     }
@@ -67,11 +72,14 @@ public class VinylServer {
           processRequest(inputLine);
         }
       } catch (IOException e) {
+        logger.log("Client communication error: " + e.getMessage());
         e.printStackTrace();
       } finally {
         try {
           clientSocket.close();
+          logger.log("Client connection closed: " + clientSocket.getInetAddress());
         } catch (IOException e) {
+          logger.log("Error closing client socket: " + e.getMessage());
           e.printStackTrace();
         }
       }
@@ -84,19 +92,29 @@ public class VinylServer {
 
         switch (action) {
           case "LIST_VINYLS":
+            logger.log("Received LIST_VINYLS request");
             sendVinylList();
             break;
           case "BORROW":
+            String borrowTitle = request.get("title").getAsString();
+            String borrower = request.get("borrower").getAsString();
+            logger.log("Received BORROW request: Vinyl '" + borrowTitle + "' by " + borrower);
             borrowVinyl(request);
             break;
           case "RESERVE":
+            String reserveTitle = request.get("title").getAsString();
+            String reserver = request.get("reserver").getAsString();
+            logger.log("Received RESERVE request: Vinyl '" + reserveTitle + "' by " + reserver);
             reserveVinyl(request);
             break;
           case "RETURN":
+            String returnTitle = request.get("title").getAsString();
+            logger.log("Received RETURN request: Vinyl '" + returnTitle + "'");
             returnVinyl(request);
             break;
         }
       } catch (Exception e) {
+        logger.log("Error processing request: " + e.getMessage());
         sendErrorResponse("Invalid request: " + e.getMessage());
       }
     }
@@ -105,6 +123,7 @@ public class VinylServer {
       List<Vinyl> vinyls = library.getVinyls();
       String jsonResponse = gson.toJson(vinyls);
       out.println(jsonResponse);
+      logger.log("Sent vinyl list to client");
     }
 
     private void borrowVinyl(JsonObject request) {
@@ -123,7 +142,10 @@ public class VinylServer {
         response.addProperty("status", "success");
         response.addProperty("message", "Vinyl borrowed successfully");
         out.println(gson.toJson(response));
+
+        logger.log("Vinyl '" + title + "' successfully borrowed by " + borrower);
       } catch (IllegalStateException | IllegalArgumentException e) {
+        logger.log("Borrow error: " + e.getMessage());
         sendErrorResponse(e.getMessage());
       }
     }
@@ -144,7 +166,10 @@ public class VinylServer {
         response.addProperty("status", "success");
         response.addProperty("message", "Vinyl reserved successfully");
         out.println(gson.toJson(response));
+
+        logger.log("Vinyl '" + title + "' successfully reserved by " + reserver);
       } catch (IllegalStateException | IllegalArgumentException e) {
+        logger.log("Reserve error: " + e.getMessage());
         sendErrorResponse(e.getMessage());
       }
     }
@@ -164,7 +189,10 @@ public class VinylServer {
         response.addProperty("status", "success");
         response.addProperty("message", "Vinyl returned successfully");
         out.println(gson.toJson(response));
+
+        logger.log("Vinyl '" + title + "' successfully returned");
       } catch (IllegalStateException | IllegalArgumentException e) {
+        logger.log("Return error: " + e.getMessage());
         sendErrorResponse(e.getMessage());
       }
     }
@@ -174,6 +202,7 @@ public class VinylServer {
       errorResponse.addProperty("status", "error");
       errorResponse.addProperty("message", errorMessage);
       out.println(gson.toJson(errorResponse));
+      logger.log("Sent error response: " + errorMessage);
     }
   }
 
@@ -182,4 +211,3 @@ public class VinylServer {
     server.start();
   }
 }
-
