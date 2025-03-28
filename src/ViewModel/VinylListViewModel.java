@@ -1,31 +1,30 @@
 package ViewModel;
 
-import Model.SharedVinylState;
 import Model.Vinyl;
-import Model.VinylLibrary;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 
-public class VinylListViewModel implements Observer {
-  private VinylLibrary library;
-  private SimpleListProperty<VinylViewModel> vinyls;
-  private SharedVinylState sharedState;
+import java.util.List;
 
-  public VinylListViewModel(VinylLibrary library) {
-    this.library = library;
-    this.library.addObserver(this);
+public class VinylListViewModel implements Observer {
+  private SimpleListProperty<VinylViewModel> vinyls;
+  private VinylSocketClient socketClient;
+
+  public VinylListViewModel() {
+    this.socketClient = VinylSocketClient.getInstance();
     this.vinyls = new SimpleListProperty<>(FXCollections.observableArrayList());
-    this.sharedState = SharedVinylState.getInstance();
     updateVinylList();
   }
 
   private void updateVinylList() {
-    Platform.runLater(() -> {
-      vinyls.clear();
-      for (Vinyl vinyl : library.getVinyls()) {
-        vinyls.add(new VinylViewModel(vinyl));
-      }
+    socketClient.listVinyls().thenAccept(vinylList -> {
+      Platform.runLater(() -> {
+        vinyls.clear();
+        for (Vinyl vinyl : vinylList) {
+          vinyls.add(new VinylViewModel(vinyl));
+        }
+      });
     });
   }
 
@@ -36,5 +35,32 @@ public class VinylListViewModel implements Observer {
 
   public SimpleListProperty<VinylViewModel> vinylsProperty() {
     return vinyls;
+  }
+
+  public void borrowVinyl(VinylViewModel vinyl) {
+    socketClient.borrowVinyl(vinyl.getVinyl().getTitle(), "Manual User")
+        .thenAccept(success -> {
+          if (success) {
+            updateVinylList();
+          }
+        });
+  }
+
+  public void reserveVinyl(VinylViewModel vinyl) {
+    socketClient.reserveVinyl(vinyl.getVinyl().getTitle(), "Manual User")
+        .thenAccept(success -> {
+          if (success) {
+            updateVinylList();
+          }
+        });
+  }
+
+  public void returnVinyl(VinylViewModel vinyl) {
+    socketClient.returnVinyl(vinyl.getVinyl().getTitle())
+        .thenAccept(success -> {
+          if (success) {
+            updateVinylList();
+          }
+        });
   }
 }
