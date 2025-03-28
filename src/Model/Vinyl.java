@@ -1,63 +1,131 @@
 package Model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import ViewModel.Observer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Vinyl {
-  @SerializedName("title")
-  @Expose
   private String title;
-
-  @SerializedName("artist")
-  @Expose
   private String artist;
-
-  @SerializedName("year")
-  @Expose
   private int year;
-
-  @SerializedName("borrower")
-  @Expose
+  private VinylState state;
   private String borrower;
-
-  @SerializedName("reserver")
-  @Expose
   private String reserver;
-
-  @SerializedName("status")
-  @Expose
-  private String status;
-
-  @SerializedName("markedForRemoval")
-  @Expose
   private boolean markedForRemoval;
+  private List<Observer> observers;
 
-  // Default constructor for Gson
-  public Vinyl() {
-    this.state = new AvailableState(this);
-  }
-
+  // Primary constructor
   public Vinyl(String title, String artist, int year) {
     this.title = title;
     this.artist = artist;
     this.year = year;
-    this.state = new AvailableState(this);
     this.observers = new ArrayList<>();
     this.markedForRemoval = false;
+    // Ensure state is initialized
+    this.setState(new AvailableState(this));
   }
 
-  // Add getters for Gson serialization
+  // No-arg constructor for potential serialization
+  public Vinyl() {
+    this.observers = new ArrayList<>();
+    this.markedForRemoval = false;
+    this.setState(new AvailableState(this));
+  }
+
+  public void setState(VinylState state) {
+    this.state = state;
+    notifyObservers();
+  }
+
+  public void borrow(String borrower) {
+    if (markedForRemoval && (getReserver() == null || !borrower.equals(getReserver()))) {
+      throw new IllegalStateException("Vinyl is marked for removal");
+    }
+    state.borrow(borrower);
+  }
+
+  public void reserve(String reserver) {
+    if (markedForRemoval) {
+      throw new IllegalStateException("Vinyl is marked for removal");
+    }
+    state.reserve(reserver);
+  }
+
+  public void returnVinyl() {
+    state.returnVinyl();
+    if (markedForRemoval && getReserver() == null) {
+      notifyRemoval();
+    }
+  }
+
+  // Ensure getStatus always works
+  public String getStatus() {
+    if (state == null) {
+      this.setState(new AvailableState(this));
+    }
+    return state.getStatus();
+  }
+
+  // Getters and Setters
   public String getTitle() { return title; }
+  public void setTitle(String title) { this.title = title; }
+
   public String getArtist() { return artist; }
+  public void setArtist(String artist) { this.artist = artist; }
+
   public int getYear() { return year; }
+  public void setYear(int year) { this.year = year; }
+
   public String getBorrower() { return borrower; }
+  public void setBorrower(String borrower) { this.borrower = borrower; }
+
   public String getReserver() { return reserver; }
+  public void setReserver(String reserver) { this.reserver = reserver; }
+
   public boolean isMarkedForRemoval() { return markedForRemoval; }
 
-  // Rest of the existing Vinyl class implementation...
+  public void markForRemoval() {
+    this.markedForRemoval = true;
+    notifyObservers();
+  }
 
-  // Additional method for Gson serialization
-  public String getStatus() {
-    return state != null ? state.getStatus() : "Unknown";
+  // Observer-related methods
+  public void addObserver(Observer observer) {
+    if (observers == null) {
+      observers = new ArrayList<>();
+    }
+    observers.add(observer);
+  }
+
+  public void removeObserver(Observer observer) {
+    if (observers != null) {
+      observers.remove(observer);
+    }
+  }
+
+  private void notifyObservers() {
+    if (observers != null) {
+      for (Observer observer : observers) {
+        observer.update();
+      }
+    }
+  }
+
+  private void notifyRemoval() {
+    if (observers != null) {
+      for (Observer observer : observers) {
+        if (observer instanceof VinylLibrary) {
+          ((VinylLibrary) observer).removeVinyl(this);
+        }
+      }
+    }
+  }
+
+  // Ensure state is always accessible
+  public VinylState getState() {
+    if (state == null) {
+      this.setState(new AvailableState(this));
+    }
+    return state;
   }
 }

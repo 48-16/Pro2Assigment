@@ -1,5 +1,6 @@
 package ViewModel;
 
+import Model.VinylLibrary;
 import View.MainViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +14,9 @@ public class VinylLibraryApp extends Application {
     primaryStage.setScene(new Scene(loader.load()));
 
     MainViewController controller = loader.getController();
-    VinylListViewModel viewModel = new VinylListViewModel();
+    VinylLibrary lib = new VinylLibrary();
+    lib.initializeDefaultVinyls();
+    VinylListViewModel viewModel = new VinylListViewModel(lib);
     controller.setViewModel(viewModel);
 
     primaryStage.setTitle("Networked Vinyl Library");
