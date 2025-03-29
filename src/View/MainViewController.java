@@ -4,6 +4,7 @@ import Model.SharedVinylState;
 import Model.Vinyl;
 import Server.Logger;
 import ViewModel.VinylListViewModel;
+import ViewModel.VinylSocketClient;
 import ViewModel.VinylViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,10 +28,12 @@ public class MainViewController {
   private VinylListViewModel viewModel;
   private SharedVinylState sharedState;
   private Logger logger;
+  private VinylSocketClient socketClient;
 
   public void initialize() {
     sharedState = SharedVinylState.getInstance();
     logger = Logger.getInstance();
+    socketClient = VinylSocketClient.getInstance();
 
     titleColumn.setCellValueFactory(cellData -> cellData.getValue().titleProperty());
     artistColumn.setCellValueFactory(cellData -> cellData.getValue().artistProperty());
@@ -53,11 +56,28 @@ public class MainViewController {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
       try {
-        logger.log("Manual User reserving vinyl: " + selected.getTitle());
-        selected.getVinyl().reserve("Manual User");
-        logger.log("Vinyl reserved successfully: " + selected.getTitle());
-      } catch (IllegalStateException e) {
-        logger.log("Reserve failed: " + e.getMessage());
+        String title = selected.getTitle();
+        logger.log("Manual User attempting to reserve vinyl: " + title);
+
+        // Use the socket client to send the request to the server
+        socketClient.reserveVinyl(title, "Manual User")
+                .thenAccept(success -> {
+                  if (success) {
+                    logger.log("Vinyl reserved successfully: " + title);
+                    // Refresh the vinyl list to show updated status
+                    socketClient.listVinyls().thenAccept(vinyls -> viewModel.refreshFromServer(vinyls));
+                  } else {
+                    logger.log("Reserve failed for: " + title);
+                    showErrorOnJavaFXThread("Failed to reserve vinyl. Please try again.");
+                  }
+                })
+                .exceptionally(ex -> {
+                  logger.log("Reserve error: " + ex.getMessage());
+                  showErrorOnJavaFXThread("Error: " + ex.getMessage());
+                  return null;
+                });
+      } catch (Exception e) {
+        logger.log("Reserve error: " + e.getMessage());
         showError(e.getMessage());
       }
     } else {
@@ -71,11 +91,28 @@ public class MainViewController {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
       try {
-        logger.log("Manual User borrowing vinyl: " + selected.getTitle());
-        selected.getVinyl().borrow("Manual User");
-        logger.log("Vinyl borrowed successfully: " + selected.getTitle());
-      } catch (IllegalStateException e) {
-        logger.log("Borrow failed: " + e.getMessage());
+        String title = selected.getTitle();
+        logger.log("Manual User attempting to borrow vinyl: " + title);
+
+        // Use the socket client to send the request to the server
+        socketClient.borrowVinyl(title, "Manual User")
+                .thenAccept(success -> {
+                  if (success) {
+                    logger.log("Vinyl borrowed successfully: " + title);
+                    // Refresh the vinyl list to show updated status
+                    socketClient.listVinyls().thenAccept(vinyls -> viewModel.refreshFromServer(vinyls));
+                  } else {
+                    logger.log("Borrow failed for: " + title);
+                    showErrorOnJavaFXThread("Failed to borrow vinyl. Please try again.");
+                  }
+                })
+                .exceptionally(ex -> {
+                  logger.log("Borrow error: " + ex.getMessage());
+                  showErrorOnJavaFXThread("Error: " + ex.getMessage());
+                  return null;
+                });
+      } catch (Exception e) {
+        logger.log("Borrow error: " + e.getMessage());
         showError(e.getMessage());
       }
     } else {
@@ -89,11 +126,28 @@ public class MainViewController {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
       try {
-        logger.log("Manual User returning vinyl: " + selected.getTitle());
-        selected.getVinyl().returnVinyl();
-        logger.log("Vinyl returned successfully: " + selected.getTitle());
-      } catch (IllegalStateException e) {
-        logger.log("Return failed: " + e.getMessage());
+        String title = selected.getTitle();
+        logger.log("Manual User attempting to return vinyl: " + title);
+
+        // Use the socket client to send the request to the server
+        socketClient.returnVinyl(title)
+                .thenAccept(success -> {
+                  if (success) {
+                    logger.log("Vinyl returned successfully: " + title);
+                    // Refresh the vinyl list to show updated status
+                    socketClient.listVinyls().thenAccept(vinyls -> viewModel.refreshFromServer(vinyls));
+                  } else {
+                    logger.log("Return failed for: " + title);
+                    showErrorOnJavaFXThread("Failed to return vinyl. Please try again.");
+                  }
+                })
+                .exceptionally(ex -> {
+                  logger.log("Return error: " + ex.getMessage());
+                  showErrorOnJavaFXThread("Error: " + ex.getMessage());
+                  return null;
+                });
+      } catch (Exception e) {
+        logger.log("Return error: " + e.getMessage());
         showError(e.getMessage());
       }
     } else {
@@ -106,9 +160,31 @@ public class MainViewController {
   private void onRemove() {
     VinylViewModel selected = vinylTable.getSelectionModel().getSelectedItem();
     if (selected != null) {
-      logger.log("Manual User marking vinyl for removal: " + selected.getTitle());
-      selected.getVinyl().markForRemoval();
-      logger.log("Vinyl marked for removal: " + selected.getTitle());
+      try {
+        String title = selected.getTitle();
+        logger.log("Manual User marking vinyl for removal: " + title);
+
+        // Add new method to socket client for marking removal
+        socketClient.markForRemoval(title)
+                .thenAccept(success -> {
+                  if (success) {
+                    logger.log("Vinyl marked for removal: " + title);
+                    // Refresh the vinyl list to show updated status
+                    socketClient.listVinyls().thenAccept(vinyls -> viewModel.refreshFromServer(vinyls));
+                  } else {
+                    logger.log("Mark for removal failed for: " + title);
+                    showErrorOnJavaFXThread("Failed to mark vinyl for removal. Please try again.");
+                  }
+                })
+                .exceptionally(ex -> {
+                  logger.log("Mark for removal error: " + ex.getMessage());
+                  showErrorOnJavaFXThread("Error: " + ex.getMessage());
+                  return null;
+                });
+      } catch (Exception e) {
+        logger.log("Mark for removal error: " + e.getMessage());
+        showError(e.getMessage());
+      }
     } else {
       logger.log("Remove attempted without selecting a vinyl");
       showError("Please select a vinyl to remove");
@@ -118,7 +194,7 @@ public class MainViewController {
   @FXML
   private void showDetails() {
     try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("View/DetailsViewFXML.fxml"));
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/DetailsViewFXML.fxml"));
       Stage detailsStage = new Stage();
       detailsStage.initModality(Modality.APPLICATION_MODAL);
       detailsStage.setTitle("Vinyl Details");
@@ -147,5 +223,9 @@ public class MainViewController {
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
+  }
+
+  private void showErrorOnJavaFXThread(String message) {
+    javafx.application.Platform.runLater(() -> showError(message));
   }
 }

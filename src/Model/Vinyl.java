@@ -32,10 +32,40 @@ public class Vinyl {
     this.setState(new AvailableState(this));
   }
 
+  // Method to update this vinyl with data from server
+  public void updateFromServerData(Vinyl serverVinyl) {
+    if (serverVinyl == null) {
+      return;
+    }
+
+    this.artist = serverVinyl.getArtist();
+    this.year = serverVinyl.getYear();
+    this.borrower = serverVinyl.getBorrower();
+    this.reserver = serverVinyl.getReserver();
+    this.markedForRemoval = serverVinyl.isMarkedForRemoval();
+
+    // Set the appropriate state based on server data
+    String status = serverVinyl.getStatus();
+    if (status.contains("Borrowed") && status.contains("Reserved")) {
+      this.setState(new BorrowedAndReservedState(this));
+    } else if (status.contains("Borrowed")) {
+      this.setState(new BorrowedState(this));
+    } else if (status.contains("Reserved")) {
+      this.setState(new ReservedState(this));
+    } else {
+      this.setState(new AvailableState(this));
+    }
+
+    notifyObservers();
+  }
+
   public void setState(VinylState state) {
     this.state = state;
     notifyObservers();
   }
+
+  // The following methods are kept for compatibility but should not be called directly
+  // from the client UI - should use VinylSocketClient instead
 
   public void borrow(String borrower) {
     if (markedForRemoval && (getReserver() == null || !borrower.equals(getReserver()))) {

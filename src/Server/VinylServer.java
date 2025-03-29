@@ -19,7 +19,7 @@ public class VinylServer
   private ServerSocket serverSocket;
   private ExecutorService threadPool;
   private static Logger logger;
-  private String host;
+  private String host = "localhost";
   private int port;
 
   public VinylServer(String host, int port)

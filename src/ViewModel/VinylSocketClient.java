@@ -54,7 +54,6 @@ public class VinylSocketClient {
     return instance;
   }
 
-
   public CompletableFuture<List<Vinyl>> listVinyls() {
     return CompletableFuture.supplyAsync(() -> {
       JsonObject request = new JsonObject();
@@ -127,6 +126,24 @@ public class VinylSocketClient {
     });
   }
 
+  public CompletableFuture<Boolean> markForRemoval(String title) {
+    return CompletableFuture.supplyAsync(() -> {
+      JsonObject request = new JsonObject();
+      request.addProperty("action", "MARK_FOR_REMOVAL");
+      request.addProperty("title", title);
+      out.println(gson.toJson(request));
+
+      try {
+        String response = in.readLine();
+        JsonObject result = gson.fromJson(response, JsonObject.class);
+        return result.get("status").getAsString().equals("success");
+      } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+      }
+    });
+  }
+
   public void close() {
     try {
       if (socket != null) socket.close();
@@ -137,4 +154,3 @@ public class VinylSocketClient {
     }
   }
 }
-

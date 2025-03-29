@@ -7,19 +7,25 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 
+import java.util.List;
+
 public class VinylListViewModel implements Observer {
   private VinylLibrary library;
   private SimpleListProperty<VinylViewModel> vinyls;
   private SharedVinylState sharedState;
+  private VinylSocketClient socketClient;
 
   public VinylListViewModel(VinylLibrary library) {
     this.library = library;
     this.library.addObserver(this);
+    this.socketClient = VinylSocketClient.getInstance();
 
     // Ensure vinyls is always initialized
     this.vinyls = new SimpleListProperty<>(FXCollections.observableArrayList());
     this.sharedState = SharedVinylState.getInstance();
-    updateVinylList();
+
+    // Initial population from server
+    socketClient.listVinyls().thenAccept(this::refreshFromServer);
   }
 
   private void updateVinylList() {
@@ -30,6 +36,21 @@ public class VinylListViewModel implements Observer {
         vinyls.add(new VinylViewModel(vinyl));
       }
     });
+  }
+
+  public void refreshFromServer(List<Vinyl> serverVinyls) {
+    if (serverVinyls != null) {
+      Platform.runLater(() -> {
+        // Update the local library with server data
+        library.updateFromServerData(serverVinyls);
+
+        // Update the view models
+        vinyls.clear();
+        for (Vinyl vinyl : library.getVinyls()) {
+          vinyls.add(new VinylViewModel(vinyl));
+        }
+      });
+    }
   }
 
   @Override
