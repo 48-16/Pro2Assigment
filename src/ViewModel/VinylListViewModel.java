@@ -23,9 +23,7 @@ public class VinylListViewModel implements Observer {
     // Ensure vinyls is always initialized
     this.vinyls = new SimpleListProperty<>(FXCollections.observableArrayList());
     this.sharedState = SharedVinylState.getInstance();
-
-    // Initial population from server
-    socketClient.listVinyls().thenAccept(this::refreshFromServer);
+    updateVinylList();
   }
 
   private void updateVinylList() {

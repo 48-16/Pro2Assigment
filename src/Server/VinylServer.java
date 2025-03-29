@@ -153,6 +153,11 @@ public class VinylServer
             logger.log("Received RETURN request: Vinyl '" + returnTitle + "'");
             returnVinyl(request);
             break;
+          case "MARK_FOR_REMOVAL":
+            String removalTitle = request.get("title").getAsString();
+            logger.log("Received MARK_FOR_REMOVAL request: Vinyl '" + removalTitle + "'");
+            markVinylForRemoval(request);
+            break;
         }
       }
       catch (Exception e)
@@ -161,7 +166,28 @@ public class VinylServer
         sendErrorResponse("Invalid request: " + e.getMessage());
       }
     }
+    private void markVinylForRemoval(JsonObject request) {
+      try {
+        String title = request.get("title").getAsString();
 
+        Vinyl vinylToMark = library.getVinyls().stream()
+                .filter(v -> v.getTitle().equals(title)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Vinyl not found"));
+
+        vinylToMark.markForRemoval();
+
+        JsonObject response = new JsonObject();
+        response.addProperty("status", "success");
+        response.addProperty("message", "Vinyl marked for removal successfully");
+        out.println(gson.toJson(response));
+
+        logger.log("Vinyl '" + title + "' successfully marked for removal");
+      }
+      catch (IllegalStateException | IllegalArgumentException e) {
+        logger.log("Mark for removal error: " + e.getMessage());
+        sendErrorResponse(e.getMessage());
+      }
+    }
     private void sendVinylList()
     {
       List<Vinyl> vinyls = library.getVinyls();

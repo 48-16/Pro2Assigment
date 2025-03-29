@@ -32,7 +32,7 @@ public class VinylLibraryApp extends Application {
 
     MainViewController controller = loader.getController();
     VinylLibrary lib = new VinylLibrary();
-    lib.initializeDefaultVinyls();
+    // Remove lib.initializeDefaultVinyls(); - We'll rely on server data
     VinylListViewModel viewModel = new VinylListViewModel(lib);
     controller.setViewModel(viewModel);
 

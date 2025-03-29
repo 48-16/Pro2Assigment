@@ -28,13 +28,7 @@ public class VinylSocketClient {
     this.host = host;
     this.port = port;
     gson = new Gson();
-    try {
-      socket = new Socket(host, port);
-      in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-      out = new PrintWriter(socket.getOutputStream(), true);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    connectToServer();
   }
 
   public static synchronized VinylSocketClient getInstance() {
@@ -68,6 +62,33 @@ public class VinylSocketClient {
         return new ArrayList<>();
       }
     });
+  }
+  private void connectToServer() {
+    try {
+      if (socket != null && !socket.isClosed()) {
+        // Close existing connection before creating a new one
+        socket.close();
+      }
+
+      socket = new Socket(host, port);
+      in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+      out = new PrintWriter(socket.getOutputStream(), true);
+      System.out.println("Connected to server at " + host + ":" + port);
+    } catch (IOException e) {
+      System.err.println("Failed to connect to server: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  public boolean reconnect() {
+    try {
+      close();
+      connectToServer();
+      return socket != null && socket.isConnected();
+    } catch (Exception e) {
+      System.err.println("Reconnection failed: " + e.getMessage());
+      return false;
+    }
   }
 
   public CompletableFuture<Boolean> borrowVinyl(String title, String borrower) {
